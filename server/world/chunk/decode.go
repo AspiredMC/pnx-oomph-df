@@ -116,7 +116,6 @@ func decodeSubChunk(buf *bytes.Buffer, c *Chunk, index *byte, e Encoding) (*SubC
 		// Version 1 only has one layer for each sub chunk, but uses the format with palettes.
 		storage, err := decodePalettedStorage(buf, e, BlockPaletteEncoding{Blocks: c.br})
 		if err != nil {
-			fmt.Println("V1 error decoding paletted storage:", err)
 			return nil, err
 		}
 		sub.storages = append(sub.storages, storage)
@@ -181,7 +180,6 @@ func decodeBiomes(buf *bytes.Buffer, c *Chunk, e Encoding) error {
 func decodePalettedStorage(buf *bytes.Buffer, e Encoding, pe paletteEncoding) (*PalettedStorage, error) {
 	blockSize, err := buf.ReadByte()
 	if err != nil {
-		fmt.Println("error reading block size:", err)
 		return nil, fmt.Errorf("error reading block size: %w", err)
 	}
 	blockSize >>= 1
@@ -192,7 +190,6 @@ func decodePalettedStorage(buf *bytes.Buffer, e Encoding, pe paletteEncoding) (*
 
 	size := paletteSize(blockSize)
 	if size > 32 {
-		fmt.Println("cannot read paletted storage: size too large:", size)
 		return nil, fmt.Errorf("cannot read paletted storage (size=%v) %T: size too large", blockSize, pe)
 	}
 	uint32Count := size.uint32s()
@@ -202,7 +199,6 @@ func decodePalettedStorage(buf *bytes.Buffer, e Encoding, pe paletteEncoding) (*
 
 	data := buf.Next(byteCount)
 	if len(data) != byteCount {
-		fmt.Println("cannot read paletted storage: not enough block data present:", len(data), "bytes read, expected", byteCount)
 		return nil, fmt.Errorf("cannot read paletted storage (size=%v) %T: not enough block data present: expected %v bytes, got %v", blockSize, pe, byteCount, len(data))
 	}
 	for i := 0; i < uint32Count; i++ {
